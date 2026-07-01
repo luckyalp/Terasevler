@@ -838,6 +838,7 @@ function dlCSV(){
 
 function dlPDF(){
   const price     = getPrice();
+  const bill      = getVal('total-bill');
   const totalKwh  = getVal('total-kwh');
   const unitKwhs  = units.map(u=>{const c=getVal('u-'+u.id),p=prevVals[u.did]?.val||0;return c>0&&p>0&&c>=p?c-p:(c>0&&!p?c:0);});
   const unitSum   = unitKwhs.reduce((a,b)=>a+b,0);
@@ -850,7 +851,7 @@ function dlPDF(){
   });
   if (sharedKwh>0){const sA=sharedKwh*price;grand+=sA;rows+=`<tr style="background:#fff7ed"><td colspan="3" style="padding:5px 10px;font-size:11px;color:#ea580c;letter-spacing:1px;text-transform:uppercase">Müşterek Elektrik</td></tr><tr style="background:#fff7ed"><td style="padding:7px 10px;color:#ea580c">Müşterek</td><td style="padding:7px 10px;text-align:right;color:#ea580c">${fmt(sharedKwh)} kWh</td><td style="padding:7px 10px;text-align:right;color:#ea580c;font-weight:600">${fmtTL(sA)}</td></tr>`;}
   const w=window.open('','_blank','width=700,height=600');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;padding:24px;font-size:13px;color:#1a1a1a}h2{margin-bottom:4px}p{color:#666;font-size:12px;margin-bottom:16px}table{width:100%;border-collapse:collapse}th{background:#1a1a1a;color:#fff;padding:8px 10px;text-align:left;font-size:11px;letter-spacing:1px}th:not(:first-child){text-align:right}tr{border-bottom:1px solid #eee}tfoot td{padding:10px;font-weight:700;font-size:14px;border-top:2px solid #1a1a1a}tfoot td:last-child{text-align:right;color:#16a34a}@media print{button{display:none}}</style></head><body><h2>Elektrik Hesabı</h2><p>${getMonthStr()} &nbsp;·&nbsp; ${price>0?price.toFixed(4)+' ₺/kWh':''} &nbsp;·&nbsp; ${new Date().toLocaleDateString('tr-TR')}</p><table><thead><tr><th>Daire</th><th>kWh</th><th>Tutar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2">TOPLAM</td><td>${fmtTL(grand)}</td></tr></tfoot></table></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;padding:24px;font-size:13px;color:#1a1a1a}h2{margin-bottom:4px}p{color:#666;font-size:12px;margin-bottom:16px;line-height:1.6}table{width:100%;border-collapse:collapse}th{background:#1a1a1a;color:#fff;padding:8px 10px;text-align:left;font-size:11px;letter-spacing:1px}th:not(:first-child){text-align:right}tr{border-bottom:1px solid #eee}tfoot td{padding:10px;font-weight:700;font-size:14px;border-top:2px solid #1a1a1a}tfoot td:last-child{text-align:right;color:#16a34a}@media print{button{display:none}}</style></head><body><h2>Elektrik Hesabı</h2><p>${getMonthStr()} &nbsp;·&nbsp; ${price>0?price.toFixed(2)+' ₺/kWh':''} &nbsp;·&nbsp; ${new Date().toLocaleDateString('tr-TR')}<br>${totalKwh>0?'Toplam Tüketim: '+fmt(totalKwh)+' kWh':''}${totalKwh>0&&bill>0?' &nbsp;·&nbsp; ':''}${bill>0?'Toplam Fatura: '+fmtTL(bill):''}</p><table><thead><tr><th>Daire</th><th>kWh</th><th>Tutar</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2">TOPLAM</td><td>${fmtTL(grand)}</td></tr></tfoot></table></body></html>`);
   w.document.close(); setTimeout(()=>w.print(),400);
 }
 
